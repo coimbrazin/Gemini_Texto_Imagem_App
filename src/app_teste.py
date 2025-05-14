@@ -6,67 +6,65 @@ st.set_page_config(
     page_title="COIMBRA GENERATOR 🔥",
     page_icon="🔥",
     layout="centered",
-    initial_sidebar_state="auto",
+    initial_sidebar_state="expanded",
 )
 
-# Fundo personalizado com imagem via URL
-BACKGROUND_IMAGE_URL = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.reddit.com%2Fr%2Fwallpapers%2Fcomments%2F106ubm6%2Fdesktop_aesthetic_wallpaper_19201080%2F%3Ftl%3Dpt-br&psig=AOvVaw3nVCHjl7AB1gRVxxKvhgQd&ust=1746126985575000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJD3uYi8gI0DFQAAAAAdAAAAABAE"  # <-- troque aqui se quiser outro
-
-st.markdown(f"""
+# Adicionar a imagem de fundo
+bg_image_url = "https://wallpapers.com/images/featured/simple-clean-8g9017acqfddycrl.jpg"  # Substitua pela URL da imagem desejada
+st.markdown(
+    f"""
     <style>
     .stApp {{
-        background-image: url("{BACKGROUND_IMAGE_URL}");
+        background-image: url({bg_image_url});
         background-size: cover;
-        background-attachment: fixed;
         background-position: center;
-    }}
-    .main {{
-        background-color: rgba(255, 255, 255, 0.9);
-        padding: 2rem;
-        border-radius: 20px;
-    }}
-    h1, h2, h3 {{
-        color: #4B0082;
-        text-shadow: 1px 1px 2px #ccc;
-    }}
-    .stButton > button {{
-        background-color: #4B0082;
-        color: white;
-        border-radius: 10px;
-        padding: 10px 24px;
-        font-size: 16px;
-        border: none;
-    }}
-    .stTextArea, .stTextInput {{
-        border-radius: 8px !important;
+        background-repeat: no-repeat;
+        min-height: 100vh;
     }}
     </style>
-""", unsafe_allow_html=True)
+    """, 
+    unsafe_allow_html=True
+)
 
-# Título
+# Sidebar para seleção
+st.sidebar.title("🎛️ Escolha o modo")
+modo = st.sidebar.radio("O que você deseja gerar?", ["Texto (Chat)", "Imagem"])
+
+# Título e descrição
 st.markdown("# 🔥 COIMBRA GENERATOR")
 st.markdown("Gere **textos criativos** ou **imagens realistas** com inteligência artificial.")
 
-# Escolha entre texto ou imagem
-modo = st.radio("Escolha o que deseja gerar:", ["Texto", "Imagem"])
+# === TEXTO COMO CHAT ===
+if modo == "Texto (Chat)":
+    st.markdown("## 🗨️ Bate-papo com a IA")
+    formato = st.selectbox("📝 Formato da resposta:", ["Texto livre", "Artigo", "Poema", "Resumo", "Crônica", "Argumentativo"])
 
-# Se for gerar texto
-if modo == "Texto":
-    tema = st.text_input("📌 Digite um tema para o texto:", placeholder="Ex: Faça uma receita")
-    formato = st.selectbox("📝 Escolha o formato do texto:", ["Texto livre", "Artigo", "Poema", "Resumo", "Crônica", "Argumentativo"])
-    if st.button("🚀 Gerar Texto"):
-        if not tema:
-            st.warning("Por favor, insira um tema.")
+    # Inicializa histórico de mensagens
+    if "chat" not in st.session_state:
+        st.session_state.chat = []
+
+    # Caixa de entrada
+    user_input = st.text_input("Digite sua pergunta ou comando:")
+
+    if st.button("Enviar") and user_input:
+        with st.spinner("Gerando resposta..."):
+            resposta = gerar_texto(user_input, formato)
+            st.session_state.chat.append(("Você", user_input))
+            st.session_state.chat.append(("IA", resposta))
+
+    # Exibe o histórico
+    for autor, msg in st.session_state.chat:
+        if autor == "Você":
+            st.markdown(f"**🧍 {autor}:** {msg}")
         else:
-            with st.spinner("Gerando texto..."):
-                resultado = gerar_texto(tema, formato)
-                st.success("✅ Texto gerado com sucesso!")
-                st.text_area("📄 Resultado:", resultado, height=300)
+            st.markdown(f"**🤖 {autor}:** {msg}")
 
-# Se for gerar imagem
+# === IMAGEM ===
 else:
-    prompt = st.text_input("🎨 Descreva a imagem que deseja gerar:", placeholder="Ex: Um dragão voando sobre uma cidade futurista")
-    if st.button("🖼️ Gerar Imagem"):
+    st.markdown("## 🎨 Gerador de Imagens")
+    prompt = st.text_input("Descreva a imagem que deseja gerar:")
+
+    if st.button("Gerar Imagem"):
         if not prompt:
             st.warning("Por favor, descreva a imagem.")
         else:

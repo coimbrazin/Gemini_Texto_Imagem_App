@@ -8,8 +8,8 @@ import stability_sdk.interfaces.gooseai.generation.generation_pb2 as generation
 load_dotenv()
 
 # Configurar a chave da API do Gemini
-GEMINI_API_KEY = os.getenv("AIzaSyC67Pc_pFQbEzAVACuoSutNekFJQ7wc7UQ")
-genai.configure(api_key="AIzaSyC67Pc_pFQbEzAVACuoSutNekFJQ7wc7UQ")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+genai.configure(api_key=GEMINI_API_KEY)
 
 # Configurações do modelo Gemini
 generation_config = {
@@ -30,9 +30,9 @@ def gerar_texto(tema: str, formato: str) -> str:
         return "Digite um tema para gerar o texto."
 
     if formato == "Texto livre":
-        prompt = f"Escreva um texto sobre {tema}."
+        prompt = tema  # Apenas o texto do usuário, sem estrutura adicional
     else:
-        prompt = f"Gerar um texto no formato {formato} sobre o tema {tema}."
+        prompt = f"Gerar um texto no formato {formato} sobre o tema {tema}."  # Para outros formatos, manter a estrutura
 
     try:
         response = model.generate_content(prompt)

@@ -2,3 +2,7 @@ streamlit
 google-generativeai
 python-dotenv
 stability-sdk
+pillow
+googletrans
+huggingface_hub
+requests
